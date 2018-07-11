@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "title": "NumberProperty",
+  "type": "object",
+  "properties": {
+    "min": {
+      "type": "integer",
+      "minimum": 3
+    },
+    "max": {
+      "type": "integer",
+      "maximum": 10
+    },
+    "between": {
+      "type": "integer",
+      "minimum": 4,
+      "maximum": 10
+    }
+  }
+}

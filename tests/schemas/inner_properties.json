@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "title": "InnerObject",
+  "type": "object",
+  "properties": {
+    "inner": {
+      "title": "BaseInnerObject",
+      "type": "object",
+      "properties": {
+        "int": {
+          "type": "integer"
+        }
+      }
+    },
+    "outer": {
+      "type": "object",
+      "$ref": "#/Repository/repo1"
+    }
+  },
+  "Repository": {
+    "repo1": {
+      "title": "Repo1",
+      "type": "object",
+      "properties": {
+        "string": {
+          "type": "string",
+          "pattern": "v:\\s*[0-9]\\.[0-9].[0-9]"
+        }
+      }
+    }
+  },
+  "additionalProperties": true
+}

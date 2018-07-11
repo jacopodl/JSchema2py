@@ -1,0 +1,54 @@
+{
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "type": "object",
+  "title": "Variant",
+  "properties": {
+    "vprop": {
+      "type": "object",
+      "oneOf": [
+        {
+          "$ref": "#/references/obj1"
+        },
+        {
+          "$ref": "#/references/obj2"
+        }
+      ]
+    },
+    "avprop": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "oneOf": [
+          {
+            "$ref": "#/references/obj1"
+          },
+          {
+            "$ref": "#/references/obj2"
+          }
+        ]
+      }
+    }
+  },
+  "references": {
+    "obj1": {
+      "type": "object",
+      "title": "Obj1",
+      "properties": {
+        "string": {
+          "type": "string",
+          "default": "I'm a Obj1"
+        }
+      }
+    },
+    "obj2": {
+      "type": "object",
+      "title": "Obj2",
+      "properties": {
+        "string": {
+          "type": "string",
+          "default": "I'm a Obj2"
+        }
+      }
+    }
+  }
+}

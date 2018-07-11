@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "title": "BasicArray",
+  "type": "object",
+  "properties": {
+    "array": {
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "minimum": 15
+      }
+    }
+  }
+}
