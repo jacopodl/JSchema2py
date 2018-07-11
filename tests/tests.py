@@ -2,6 +2,8 @@ import json
 import unittest
 from os.path import join
 
+from jschema2py import build_class
+
 TEST_BASE = "schemas/"
 
 
@@ -12,4 +14,9 @@ def load(file):
 
 class Test(unittest.TestCase):
     def test_basicproperties(self):
-        pass
+        schema = load("basic_properties")
+        bs = build_class(schema)()
+        self.assertEqual(bs.string, "HelloWorld")
+        bs.string = "hello"
+        self.assertEqual(bs.string, "hello")
+        bs.number = .123
