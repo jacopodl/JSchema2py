@@ -33,12 +33,12 @@ def __build_class(refn, schema, properties, namespace):
 
 
 def __extract_properties(refn, current, properties, namespace):
-    for property, value in current.items():
+    for prop, value in current.items():
         tp = value["type"]
         if tp == "object":
             pass
         elif tp == "array":
             pass
         else:
-            properties[property] = ConstraintFactory.get_constraint(tp, value)
+            properties[prop] = ConstraintFactory.get_constraint(tp, value)
     return properties, namespace

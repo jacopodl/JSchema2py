@@ -4,6 +4,7 @@ class JSPYMeta(type):
 
     def __new__(mcs, name, bases, dct, props=None, cinfo=None):
         dct["__jprop__"] = props
+        dct["__setattr__"] = _jspy_setattr
         JSPYMeta.__parse_cinfo(dct, cinfo)
         clazz = type.__new__(mcs, name, bases, dct)
         return clazz
@@ -22,3 +23,15 @@ class JSPYMeta(type):
         if cinfo is not None:
             if "additionalProperties" in cinfo:
                 dct["__addprop__"] = cinfo["additionalProperties"]
+
+
+def _jspy_setattr(cls, key, value):
+    dct = object.__getattribute__(cls, "__jprop__")
+    if key in dct:
+        lvalue = None if key not in cls.__dict__ else cls.__dict__[key]
+        if dct[key].validate(lvalue, value):
+            object.__setattr__(cls, key, value)
+            return
+    if not cls.__addprop__:
+        raise AttributeError("additional properties not allowed, see JSONSchema")
+    object.__setattr__(cls, key, value)
