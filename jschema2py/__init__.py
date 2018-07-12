@@ -31,7 +31,7 @@ def __build_class(refn, schema, properties, namespace):
         return [__build_class(refn, clazz, {}, {}) for clazz in objs]
     else:
         raise AttributeError("missing title or $ref or anyOf or oneOf keywords")
-    return JSPYMeta(schema["title"], (), {}, properties)
+    return JSPYMeta(schema["title"], (), {}, properties, schema)
 
 
 def __build_json_obj(refn, current):

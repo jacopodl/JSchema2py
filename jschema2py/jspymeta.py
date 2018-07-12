@@ -1,3 +1,5 @@
+import json
+
 from jschema2py.constraints import ArrayConstraint
 
 
@@ -8,7 +10,10 @@ class JSPYMeta(type):
     def __new__(mcs, name, bases, dct, props=None, cinfo=None):
         dct["__jprop__"] = props
         dct["__setattr__"] = _jspy_setattr
-        dct["getclass"] = _jspy_getclass
+        dct["__str__"] = _jspy_to_str
+        dct["__repr__"] = _jspy_to_repr
+        dct["get_class"] = _jspy_getclass
+        dct["to_dict"] = _jspy_to_dict
         JSPYMeta.__parse_cinfo(dct, cinfo)
         clazz = type.__new__(mcs, name, bases, dct)
         return clazz
@@ -49,3 +54,24 @@ def _jspy_getclass(cls, key):
             return val.constraint.type
         return val.type
     return None
+
+
+def _jspy_to_str(cls):
+    return repr(cls)
+
+
+def _jspy_to_repr(cls, serialize=True):
+    def serialize_prop(prop):
+        return _jspy_to_repr(prop, False) if hasattr(prop, "__dict__") else prop
+
+    rdict = {}
+    for k, v in cls.__dict__.items():
+        if type(v) == list or type(v) == tuple:
+            rdict[k] = [serialize_prop(prop) for prop in v]
+        else:
+            rdict[k] = serialize_prop(v)
+    return rdict if not serialize else json.dumps(rdict)
+
+
+def _jspy_to_dict(cls):
+    return _jspy_to_repr(cls, False)

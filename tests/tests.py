@@ -33,9 +33,9 @@ class Test(unittest.TestCase):
         schema = load("inner_properties")
         Ioo = build_class(schema)
         ioo = Ioo()
-        self.assertRaises(TypeError, setattr, ioo, "inner", ioo.getclass("inner"))
-        self.assertRaises(TypeError, setattr, ioo, "outer", ioo.getclass("outer"))
-        ioo.outer = ioo.getclass("outer")()
+        self.assertRaises(TypeError, setattr, ioo, "inner", ioo.get_class("inner"))
+        self.assertRaises(TypeError, setattr, ioo, "outer", ioo.get_class("outer"))
+        ioo.outer = ioo.get_class("outer")()
         self.assertRaises(ConstraintError, setattr, ioo.outer, "string", "123Ciao")
         setattr(ioo.outer, "string", "v:2.3.4")
         self.assertEqual(ioo.outer.string, "v:2.3.4")
@@ -57,7 +57,27 @@ class Test(unittest.TestCase):
         self.assertEqual(variant.avprop, [])
         with self.assertRaises(TypeError):
             variant.avprop = ["Hello"]
-        variant.avprop = [variant.getclass("avprop")[0]()]
+        variant.avprop = [variant.get_class("avprop")[0]()]
         with self.assertRaises(TypeError):
             variant.vprop = "Hello"
-        variant.vprop = variant.getclass("vprop")[0]()
+        variant.vprop = variant.get_class("vprop")[0]()
+
+    def test_strenum(self):
+        schema = load("enum_properties")
+        en = build_class(schema)()
+        with self.assertRaises(ConstraintError):
+            en.string = "hello"
+        en.string = "Hello"
+        en.string = "World"
+        en.string = "HelloWorld"
+
+    def test_repr(self):
+        schema = load("inner_properties")
+        instance = build_class(schema)()
+        instance.inner = instance.get_class("inner")()
+        instance.inner.int = 22
+        instance.outer = instance.get_class("outer")()
+        instance.outer.string = "v:1.0.0"
+        instance.bool = True
+        self.assertEqual(json.loads(repr(instance)),
+                         {"bool": True, "inner": {"int": 22}, "outer": {"string": "v:1.0.0"}})
