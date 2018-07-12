@@ -27,7 +27,8 @@ def __build_class(refn, schema, properties, namespace):
         schema = refn.navigate(schema["$ref"])
         properties, namespace = __extract_properties(RefNavigator(schema), schema["properties"], {}, {})
     elif "anyOf" in schema or "oneOf" in schema:
-        pass
+        objs = schema["oneOf"] if "oneOf" in schema else schema["anyOf"]
+        return [__build_class(refn, clazz, {}, {}) for clazz in objs]
     else:
         raise AttributeError("missing title or $ref or anyOf or oneOf keywords")
     return JSPYMeta(schema["title"], (), {}, properties)
@@ -57,12 +58,11 @@ def __extract_properties(refn, current, properties, namespace):
             if isinstance(items, dict):
                 if items["type"] == "object":
                     prp, ns = __build_json_obj(refn, items)
-                    properties[prop] = ConstraintFactory.get_constraint(tp, value, prop.constraint, [])
+                    properties[prop] = ConstraintFactory.get_constraint(tp, value, prp.constraint, [])
                     namespace.update(ns)
                     continue
-                properties[prop] = ConstraintFactory.get_constraint(tp,
-                                                                    value,
-                                                                    ConstraintFactory.CONSTRAINTS[items["type"]](items))
+                constraint = ConstraintFactory.CONSTRAINTS[items["type"]](items)
+                properties[prop] = ConstraintFactory.get_constraint(tp, value, constraint)
             else:
                 raise RuntimeError()
         else:

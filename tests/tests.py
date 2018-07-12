@@ -50,3 +50,14 @@ class Test(unittest.TestCase):
         barray.array = [24]
         self.assertEqual(barray.array, [24])
         self.assertRaises(ConstraintError, setattr, barray, "array", [12])
+
+    def test_variant(self):
+        schema = load("variant_schema")
+        variant = build_class(schema)()
+        self.assertEqual(variant.avprop, [])
+        with self.assertRaises(TypeError):
+            variant.avprop = ["Hello"]
+        variant.avprop = [variant.getclass("avprop")[0]()]
+        with self.assertRaises(TypeError):
+            variant.vprop = "Hello"
+        variant.vprop = variant.getclass("vprop")[0]()
