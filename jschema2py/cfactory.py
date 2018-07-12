@@ -4,8 +4,9 @@ from jschema2py.property import Property
 
 class ConstraintFactory:
     CONSTRAINTS = {
-        "generic": Constraint,
+        "array": ArrayConstraint,
         "boolean": BooleanConstraint,
+        "generic": Constraint,
         "integer": IntegerConstraint,
         "null": NullConstraint,
         "number": NumberConstraint,
@@ -14,11 +15,18 @@ class ConstraintFactory:
     }
 
     @staticmethod
-    def get_constraint(ctype, data, value=None):
+    def get_constraint(ctype, data, const=None, value=None):
         if ctype not in ConstraintFactory.CONSTRAINTS:
             raise RuntimeError("ConstraintError")
 
-        prop = Property(ConstraintFactory.CONSTRAINTS[ctype](data), value)
+        cns = ConstraintFactory.CONSTRAINTS[ctype]
+
+        if const is not None:
+            prop = cns(data, const)
+        else:
+            prop = cns(data)
+
+        prop = Property(prop, value)
         if isinstance(data, dict) and "default" in data:
             prop.validate(None, data["default"])
             prop.value = data["default"]

@@ -39,3 +39,14 @@ class Test(unittest.TestCase):
         self.assertRaises(ConstraintError, setattr, ioo.outer, "string", "123Ciao")
         setattr(ioo.outer, "string", "v:2.3.4")
         self.assertEqual(ioo.outer.string, "v:2.3.4")
+
+    def test_basic_array(self):
+        schema = load("basic_array")
+        barray = build_class(schema)()
+        barray.array = []
+        self.assertEqual(barray.array, [])
+        self.assertRaises(TypeError, setattr, barray, "array", ["INVALID_VALUE"])
+        self.assertRaises(TypeError, setattr, barray, "array", [23, 45, "INVALID_VALUE", 12])
+        barray.array = [24]
+        self.assertEqual(barray.array, [24])
+        self.assertRaises(ConstraintError, setattr, barray, "array", [12])

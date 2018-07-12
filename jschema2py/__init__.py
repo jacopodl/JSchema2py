@@ -53,7 +53,18 @@ def __extract_properties(refn, current, properties, namespace):
             properties[prop] = prp
             namespace.update(ns)
         elif tp == "array":
-            pass
+            items = value["items"]
+            if isinstance(items, dict):
+                if items["type"] == "object":
+                    prp, ns = __build_json_obj(refn, items)
+                    properties[prop] = ConstraintFactory.get_constraint(tp, value, prop.constraint, [])
+                    namespace.update(ns)
+                    continue
+                properties[prop] = ConstraintFactory.get_constraint(tp,
+                                                                    value,
+                                                                    ConstraintFactory.CONSTRAINTS[items["type"]](items))
+            else:
+                raise RuntimeError()
         else:
             properties[prop] = ConstraintFactory.get_constraint(tp, value)
     return properties, namespace
