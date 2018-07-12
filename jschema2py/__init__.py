@@ -24,7 +24,8 @@ def __build_class(refn, schema, properties, namespace):
     if "title" in schema:
         properties, namespace = __extract_properties(refn, schema["properties"], properties, namespace)
     elif "$ref" in schema:
-        pass
+        schema = refn.navigate(schema["$ref"])
+        properties, namespace = __extract_properties(RefNavigator(schema), schema["properties"], {}, {})
     elif "anyOf" in schema or "oneOf" in schema:
         pass
     else:
@@ -32,11 +33,25 @@ def __build_class(refn, schema, properties, namespace):
     return JSPYMeta(schema["title"], (), {}, properties)
 
 
+def __build_json_obj(refn, current):
+    namespace = {}
+    obj = __build_class(refn, current, {}, {})
+    if isinstance(obj, (list, tuple)):
+        prop = ConstraintFactory.get_constraint("variant", obj)
+        namespace = {itm.__name__: itm for itm in obj}
+    else:
+        prop = ConstraintFactory.get_constraint("generic", obj)
+        namespace[obj.__name__] = obj
+    return prop, namespace
+
+
 def __extract_properties(refn, current, properties, namespace):
     for prop, value in current.items():
         tp = value["type"]
         if tp == "object":
-            pass
+            prp, ns = __build_json_obj(refn, value)
+            properties[prop] = prp
+            namespace.update(ns)
         elif tp == "array":
             pass
         else:

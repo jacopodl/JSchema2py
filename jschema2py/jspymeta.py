@@ -1,3 +1,6 @@
+from jschema2py.constraints import ArrayConstraint
+
+
 class JSPYMeta(type):
     def __init__(cls, name, bases, dct, props=None, cinfo=None):
         type.__init__(cls, name, bases, dct)
@@ -5,6 +8,7 @@ class JSPYMeta(type):
     def __new__(mcs, name, bases, dct, props=None, cinfo=None):
         dct["__jprop__"] = props
         dct["__setattr__"] = _jspy_setattr
+        dct["getclass"] = _jspy_getclass
         JSPYMeta.__parse_cinfo(dct, cinfo)
         clazz = type.__new__(mcs, name, bases, dct)
         return clazz
@@ -35,3 +39,13 @@ def _jspy_setattr(cls, key, value):
     if not cls.__addprop__:
         raise AttributeError("additional properties not allowed, see JSONSchema")
     object.__setattr__(cls, key, value)
+
+
+def _jspy_getclass(cls, key):
+    dct = object.__getattribute__(cls, "__jprop__")
+    if key in dct:
+        val = dct[key].constraint
+        if isinstance(val, ArrayConstraint):
+            return val.constraint.type
+        return val.type
+    return None

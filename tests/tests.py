@@ -28,3 +28,14 @@ class Test(unittest.TestCase):
         self.assertRaisesRegex(ConstraintError, "minimum acceptable value: \d", setattr, nt, "min", 2)
         self.assertRaisesRegex(ConstraintError, "maximum acceptable value: \d", setattr, nt, "max", 11)
         self.assertRaisesRegex(ConstraintError, "value must be between \d and \d", setattr, nt, "between", 23)
+
+    def test_inner_properties(self):
+        schema = load("inner_properties")
+        Ioo = build_class(schema)
+        ioo = Ioo()
+        self.assertRaises(TypeError, setattr, ioo, "inner", ioo.getclass("inner"))
+        self.assertRaises(TypeError, setattr, ioo, "outer", ioo.getclass("outer"))
+        ioo.outer = ioo.getclass("outer")()
+        self.assertRaises(ConstraintError, setattr, ioo.outer, "string", "123Ciao")
+        setattr(ioo.outer, "string", "v:2.3.4")
+        self.assertEqual(ioo.outer.string, "v:2.3.4")
