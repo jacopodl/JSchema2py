@@ -27,6 +27,10 @@
           }
         ]
       }
+    },
+    "itest": {
+      "type": "object",
+      "$ref": "#/references/obj3"
     }
   },
   "references": {
@@ -47,6 +51,27 @@
         "string": {
           "type": "string",
           "default": "I'm a Obj2"
+        },
+        "itest": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "oneOf": [
+              {
+                "$ref": "variant_schema.json#/references/obj3"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "obj3": {
+      "type": "object",
+      "title": "Obj3",
+      "properties": {
+        "string": {
+          "type": "string",
+          "default": "Instance test"
         }
       }
     }

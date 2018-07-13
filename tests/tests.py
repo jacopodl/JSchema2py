@@ -53,7 +53,7 @@ class Test(unittest.TestCase):
 
     def test_variant(self):
         schema = load("variant_schema")
-        variant = build_class(schema)()
+        variant = build_class(schema, TEST_BASE)()
         self.assertEqual(variant.avprop, [])
         with self.assertRaises(TypeError):
             variant.avprop = ["Hello"]
@@ -81,3 +81,14 @@ class Test(unittest.TestCase):
         instance.bool = True
         self.assertEqual(json.loads(repr(instance)),
                          {"bool": True, "inner": {"int": 22}, "outer": {"string": "v:1.0.0"}})
+
+    def test_instance(self):
+        schema = load("variant_schema")
+        variant = build_class(schema, TEST_BASE)()
+        itest = variant.get_class("itest")
+        avitest = variant.get_class("avprop")[1]().get_class("itest")[0]
+        self.assertEqual(itest, avitest)
+        vprop = variant.get_class("vprop")[0]
+        avprop = variant.get_class("avprop")[0]
+        self.assertEqual(vprop, avprop)
+        print()
