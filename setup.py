@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 setup(
     name='jschema2py',
     version='0.1.0',
-    description="",
+    description="jsonschema to python class converter",
     long_description=open("README.md", "r").read(),
     long_description_content_type="text/markdown",
     url="https://github.com/jacopodl/jschema2py",
